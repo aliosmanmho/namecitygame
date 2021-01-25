@@ -17,9 +17,9 @@
             if (data !== null) {
                 $('#gameList').empty();
                 data.forEach(game => {
-                    $("<li id=li" + game.id + " class='list-group-item d-flex justify-content-between align-items-center' >Oyun : " + game.id + "</li>").appendTo('#gameList');
-                    $("<span class='badge badge-primary badge-pill'>" + game.maxPlayer + "</span>").appendTo('#li' + game.id);
-                    $("<button onclick='GameButton(\"" + game.id + "\")' type='button' class='btn btn-primary'>Oyna</button>").appendTo('#li' + game.id);
+                    $("<li id=li" + game.id + " class='list-group-item d-flex justify-content-between align-items-center' ><h3>Oyun : " + game.id + "</h3></li>").appendTo('#gameList');
+                    $("<span class='badge badge-primary badge-pill'><h3>" + game.maxPlayer + "</h3></span>").appendTo('#li' + game.id);
+                    $("<button onclick='GameButton(\"" + game.id + "\")' type='button' class='btn btn-primary'><h3>Oyna</h3></button>").appendTo('#li' + game.id);
                 }
                 );
                 var myGame = jQuery.map(data, function (obj) {
@@ -49,23 +49,30 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-        <div class="col-6" > <h1>İsim Şehir</h1></div>
-        <div class="col-6"> <button style="float: right;" onclick='CreateGame()' type='button' class='btn btn-primaryn'>Yei Oyun</button></div>
+            <div class="col-9">
+                <h1>İsim Şehir</h1>
+            </div>
+            <div class="col-3"> <button style="float: right; font-size:2rem;" onclick='CreateGame()' type='button'
+                    class='btn btn-primary'>Yei Oyun</button></div>
         </div>
-        <ul id="gameList" class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                Cras justo odio
-                <span class="badge badge-primary badge-pill">14</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                Dapibus ac facilisis in
-                <span class="badge badge-primary badge-pill">2</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                Morbi leo risus
-                <span class="badge badge-primary badge-pill">1</span>
-            </li>
-        </ul>
+        <div class="row">
+            <div class="col-12">
+                <ul id="gameList" class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Cras justo odio
+                        <span class="badge badge-primary badge-pill">14</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Dapibus ac facilisis in
+                        <span class="badge badge-primary badge-pill">2</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Morbi leo risus
+                        <span class="badge badge-primary badge-pill">1</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </body>
 

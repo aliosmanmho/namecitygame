@@ -20,7 +20,9 @@ class Answer{
             id: this.id,
             value:this.value,
             isCorrect:this.isCorrect,
-            isSame:this.isSame
+            isSame:this.isSame,
+            questionId:this.question.id,
+            playerId:this.player.id,
         };
     }
 }

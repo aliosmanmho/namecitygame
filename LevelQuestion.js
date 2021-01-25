@@ -9,7 +9,14 @@ class LevelQuestion{
         if(level==1)
         {
             this.questions = [[new QuestionModel(1000,"İsim",10,5),new QuestionModel(1001,"Şehir",10,5)],
-                              [new QuestionModel(1002,"İsim",10,5),new QuestionModel(1003,"Şehir",10,5)]
+                              [new QuestionModel(1002,"İsim",10,5),new QuestionModel(1003,"Şehir",10,5)],
+                              [new QuestionModel(1004,"İsim",10,5),new QuestionModel(1005,"Şehir",10,5)],
+                              [new QuestionModel(1006,"İsim",10,5),new QuestionModel(1007,"Şehir",10,5)],
+                              [new QuestionModel(1008,"İsim",10,5),new QuestionModel(1009,"Şehir",10,5)],
+                              [new QuestionModel(1010,"İsim",10,5),new QuestionModel(1011,"Şehir",10,5)],
+                              [new QuestionModel(1012,"İsim",10,5),new QuestionModel(1013,"Şehir",10,5)],
+                              [new QuestionModel(1014,"İsim",10,5),new QuestionModel(1015,"Şehir",10,5)],
+                              [new QuestionModel(1016,"İsim",10,5),new QuestionModel(1017,"Şehir",10,5)]
                              ];
         }
         else if (level == 2)

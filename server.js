@@ -115,6 +115,10 @@ function PushLevelQuestion(socket, gameId)
     let level= LevelList.find(y=>y.level == game.level);
     let levelJson = JSON.stringify(level.ResponseString());
     io.to(socket.id).emit("levelQuestion", levelJson);
+    if(game.isFull == true)
+    {
+      io.in(gameId).emit("GameStartStep", 0);
+    }
   }
 }
 
@@ -142,7 +146,9 @@ function AnswerQuestion(socket, gameId, questionId, answer) {
       if (question != null) {
         let answerObj = new AnswerModel(question, answer, player);
         player.pushAnswer(answerObj);
+        io.in(gameId).emit("playerAnswer", JSON.stringify(answerObj.ResponseString()));
         console.log('Cevap Verildi Player:%s Question:%s Answer:%s ', player.id, question.value, answer);
+        return;
       }
     });
   }
@@ -161,6 +167,7 @@ function JoinGame(socket, gameId) {
   socket.join(gameId);
   const ss = game.ResponseString();
   io.in(gameId).emit("gameJoined", JSON.stringify(ss));
+ 
   //socket.broadcast.to(gameId).emit('gameJoined', JSON.stringify(ss));
   AllSocetPushGameList();
   console.log('Oyuncu Oyuna Girdi Oyuncu:%s Oyun:%s ', player.id, game.id);

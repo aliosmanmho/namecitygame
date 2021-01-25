@@ -46,6 +46,7 @@ class  Game {
                                         dateAv.getHours(), 
                                         dateAv.getMinutes(),
                                         dateAv.getSeconds()+60);
+                
             }
     }
     finshGame()
