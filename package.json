@@ -1,0 +1,32 @@
+{
+  "name": "namecitygame",
+  "version": "1.0.0",
+  "description": "Name City Game",
+  "main": "server.js",
+  "scripts": {
+    "debug": "node server.js",
+    "test": "echo \"No test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aliosmanmho/namecitygame.git"
+  },
+  "keywords": [
+    "Name",
+    "City",
+    "Game",
+    "Nodejs"
+  ],
+  "author": "Ali Osman Mollahüseyinoğlu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aliosmanmho/namecitygame/issues"
+  },
+  "homepage": "https://github.com/aliosmanmho/namecitygame#readme",
+  "dependencies": {
+    "bootstrap": "^4.6.0",
+    "express": "^4.17.1",
+    "shortid": "^2.2.16",
+    "socket.io": "^3.1.0"
+  }
+}
