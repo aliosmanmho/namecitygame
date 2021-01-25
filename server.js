@@ -104,10 +104,8 @@ io.on('connection', (socket) => {
     
   });
 });
+http.listen(process.env.PORT || 5000);
 
-http.listen(3000, () => {
-  console.log('listening on *:3000');
-});
 
 function PushLevelQuestion(socket, gameId)
 {
