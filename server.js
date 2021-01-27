@@ -76,6 +76,17 @@ io.on('connection', (socket) => {
         console.log('Exception! message:%s ' + e.message);
     }
   });
+  socket.on(('QuestionRowFinish'), (gameId,rowIndex) => { 
+    try
+    {
+      QuestionRowFinish(gameId,rowIndex)
+    }
+    catch(e)
+    {
+        io.to(socket.id).emit("myClientError", e.message);
+        console.log('Exception! message:%s ' + e.message);
+    }
+  });
   AllSocetPushGameList();
   socket.on('disconnect', function () {
     try
@@ -106,6 +117,55 @@ io.on('connection', (socket) => {
 });
 http.listen(process.env.PORT || 5000);
 
+
+function QuestionRowFinish(gameId,rowIndex){
+  let game = GetGame(gameId);
+  if(game!=null)
+  {
+    var playerAnswers = game.players.map(x=>x.answers);
+    if(LevelList.find(x=>x.level == game.level).questions.length > rowIndex)
+     {
+      var levelQuestionsRow = LevelList.find(x=>x.level == game.level).questions[rowIndex];
+      var isFinisAllUser = true;
+      levelQuestionsRow.forEach(lvQuestionRw => {
+          var playerAnserQuestion = playerAnswers.map(x=>x.find(y=> y.question.id == lvQuestionRw.id));
+          var dd= playerAnserQuestion.find(y=>y === 'undefined')
+          playerAnserQuestion.forEach(lvQuestionRw => {
+            if(lvQuestionRw === undefined)
+            {
+              isFinisAllUser= false;
+              return;
+            }
+          });
+      });
+      if(isFinisAllUser)
+      {
+        io.in(gameId).emit("GameStartStep", rowIndex+1);
+      }
+     }
+     else 
+     {
+      var levelQuestionsRow = LevelList.find(x=>x.level == game.level).questions[rowIndex];
+      var isFinisAllUser = true;
+      levelQuestionsRow.forEach(lvQuestionRw => {
+          var playerAnserQuestion = playerAnswers.map(x=>x.find(y=> y.question.id == lvQuestionRw.id));
+          var dd= playerAnserQuestion.find(y=>y === 'undefined')
+          playerAnserQuestion.forEach(lvQuestionRw => {
+            if(lvQuestionRw === undefined)
+            {
+              isFinisAllUser= false;
+              return;
+            }
+          });
+      });
+      if(isFinisAllUser)
+      {
+          io.in(gameId).emit("GameFinish"," rowIndex+1");
+      }
+     }
+    
+  }
+}
 
 function PushLevelQuestion(socket, gameId)
 {
