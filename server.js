@@ -6,7 +6,7 @@ const cors = require('cors');
 
 const http = require('http').Server(app);
 const options = { /* ... */ };
-const io = require('socket.io')(http,options);
+const io = require('socket.io')(http,{ origins: '*:*'});
 const { Socket } = require('dgram');
 const shortid = require('shortid');
 const LevelQuestionModel = require('./LevelQuestion.js');
