@@ -10,31 +10,36 @@
 
     <script>
         var socket = io();
+        var gameTimer;
+        //Questions Row satırları ile tutuluyor
         var questionsWithRows = [];
-        var questionArray = [];
+        //Questions Row indexi ile içinde quesitions prop  bilgisi ile tutuluyor 
         var questionRow = [];
+        //Bulunan oyun Id
         var gameId = "";
+        //Quesiton Level bilgisi ile tutuluyor
         var levelQuesiton;
-        var currentRowIndex;
-        var maxRowIndex;
+        //Şuan bulunulan Question row bilgisi
+        var currentQuesitonRowIndex;
+        // Maxsimum Quesiton row bilgisi
+        var maxQuestionRowIndex;
         socket.on('GameStartStep', function (msg) {
-            currentRowIndex=msg;
-            questionRow = questionsWithRows[currentRowIndex];
-            maxRowIndex = questionsWithRows.length-1;
-            questionArray = questionRow.question;
-            QuestionShow(questionArray[0]);
+            currentQuesitonRowIndex = msg;
+            questionRow = questionsWithRows[currentQuesitonRowIndex];
+            maxQuestionRowIndex = questionsWithRows.length - 1;
+            QuestionShow(questionRow.question[0]);
 
         });
         socket.on('playerAnswer', function (msg) {
             var data = JSON.parse(msg);
-            $('#Answertable-'+data.playerId+data.questionId).text(data.value);
+            $('#Answertable-' + data.playerId + data.questionId).text(data.value);
         });
 
         function QuestionShow(question) {
             $('#questiontitle').text(question.value);
             $('#quesionID').val(question.id);
             $('#QuerstionModel').modal();
-            
+
         }
         function LevelQuestionAppendForms(msg) {
             if (levelQuesiton == null) {
@@ -73,19 +78,20 @@
             var data = JSON.parse(msg);
             if (data != null) {
                 data.players.forEach(player => {
-                    var isActive="";
+                    var isActive = "";
                     var areaSelected = "false";
-                    var nalinkActive="";
-                    if(socket.id == player.id)
-                    {
-                        isActive="show active";
-                        areaSelected="true";
-                        nalinkActive="active";
+                    var nalinkActive = "";
+                    if (socket.id == player.id) {
+                        isActive = "show active";
+                        areaSelected = "true";
+                        nalinkActive = "active";
                     }
                     $("<li id='navitem" + player.id + "' class='nav-item'></li>").appendTo('#gamersTabPanel');
-                    $("<a class='nav-link "+nalinkActive+"' id='pills-tab" + player.id + "' data-toggle='pill' href='#pills-" + player.id + "' role='tab' aria-controls='pills-" + player.id + "' aria-selected='"+areaSelected+"'>" + player.name + "</a>").appendTo('#navitem' + player.id);
-                    $("<div class='tab-pane fade "+isActive+"' id='pills-" + player.id + "' role='tabpanel' aria-labelledby='pills-" + player.id + "'></div>").appendTo('#gamersTabPanelContent');
-
+                    $("<a class='nav-link " + nalinkActive + "' id='pills-tab" + player.id + "' data-toggle='pill' href='#pills-" + player.id + "' role='tab' aria-controls='pills-" + player.id + "' aria-selected='" + areaSelected + "'>" + player.name + " </a>").appendTo('#navitem' + player.id);
+                    $("<div class='tab-pane fade " + isActive + "' id='pills-" + player.id + "' role='tabpanel' aria-labelledby='pills-" + player.id + "'></div>").appendTo('#gamersTabPanelContent');
+                    
+                    $("<span id='score-span"+player.id+"' class='badge badge-light badge-pill'> "+0+" </span>").appendTo('#pills-tab' + player.id);
+                    
                     $("<table id='table-" + player.id + "' class='table'>").appendTo('#pills-' + player.id);
                 });
             }
@@ -96,21 +102,47 @@
             LevelQuestionAppendForms(msg);
         });
         socket.on('gameOut', function (msg) {
+            clearInterval(gameTimer);
             alert("Oyuncu Çıktı Oyun Bitti!");
-            document.location.href="/";
+            GameOut();
             console.log(msg);
         });
         socket.on('errorSocet', function (msg) {
+            clearInterval(gameTimer);
             alert(msg);
         });
         socket.on('myClientError', function (msg) {
+            clearInterval(gameTimer);
             alert(msg);
         });
-
+        socket.on('GameFinish', function (msg) {
+            clearInterval(gameTimer);
+            alert(msg);
+        });
+        socket.on('PlayerScore', function (msg) {
+            var data = JSON.parse(msg); 
+            if(data!=null)
+            {
+                data.forEach(player => {
+                    $('#score-span' + player.playerId).text(player.score);
+                });
+            }
+        });
         $(document).ready(function () {
             if (window.location.search != "") {
                 gameId = window.location.search.replace("?", "");
             }
+            var seconds = 0;
+            var el = document.getElementById('game-seconds-counter');
+
+            function incrementGameSeconds() {
+                seconds += 1;
+                el.innerText = "Oyun Geçen Süre " + seconds + " saniye.";
+            }
+            function GameOut(){
+                document.location.href = "/";
+            }
+            gameTimer= setInterval(incrementGameSeconds, 1000);
             $('#gameName').text("Oyun : " + gameId);
             $('#myModal').modal();
             $('#myModal').on('hidden.bs.modal', function (e) {
@@ -121,26 +153,44 @@
                     socket.emit("joinGame", gameId);
                 }
             });
+            var questionTimer;
+            $('#QuerstionModel').on('shown.bs.modal', function (e) {
+                var seconds = 0;
+                var el = document.getElementById('question-seconds-counter');
+                var totalSecond = 11;
+                function questionSeconds() {
+                    totalSecond--;
+                    if (totalSecond <= 0) {
+                        clearInterval(questionTimer);
+                        $('#QuerstionModel').modal('hide');
+                    }
+                    el.innerText = "Soru kalan süre " + totalSecond + " saniye.";
+                }
+                questionTimer = setInterval(questionSeconds, 1000);
+
+            });
             $('#QuerstionModel').on('hidden.bs.modal', function (e) {
+                if(questionTimer!=null)
+                {
+                    clearInterval(questionTimer);
+                }
                 var questionAnswer = $("#questionAnswer").val();
                 var quesionID = $("#quesionID").val();
+                //Oyuncu Cevabını Yolluyor
                 socket.emit("AnswerQuestion", gameId, quesionID, questionAnswer);
-                const index = questionArray.findIndex(quest => quest.id == quesionID);
-                if(questionArray.length>index+1)
-                    {
-                        QuestionShow(questionArray[index+1]);
-                    }
-                    else
-                    {
-                        if(maxRowIndex > currentRowIndex + 1)
-                        {
-                            socket.emit("QuestionRowFinish", gameId,currentRowIndex);
-                        }
-                        else
-                        {
-                            socket.emit("GameFinish", gameId);
-                        }
-                    }
+                //Verilen cevap için sorunun indexine bakılıyor
+                const index = questionRow.question.findIndex(quest => quest.id == quesionID);
+                if (questionRow.question.length > index + 1) {
+                    QuestionShow(questionRow.question[index + 1]);
+                }
+                else {
+                    //if (maxQuestionRowIndex > currentQuesitonRowIndex) {
+                    socket.emit("QuestionRowFinish", gameId, currentQuesitonRowIndex);
+                    //}
+                    //else {
+                    //  socket.emit("GameFinishPlayer", gameId);
+                    //}
+                }
                 //if(questionRow.question.indexOf(question))
             });
         }); 
@@ -150,9 +200,11 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12">
+            <div class="col-9">
                 <h1 id="gameName"></h1>
             </div>
+            <div class="col-3"> <button style="float: right; font-size:2rem;" onclick='GameOut()' type='button'
+                class='btn btn-primary'>Oyundan Çık</button></div>
         </div>
         <div class="row">
             <div class="col-12">
@@ -160,6 +212,7 @@
                 </ul>
                 <div class="tab-content" id="gamersTabPanelContent">
                 </div>
+                <div id='game-seconds-counter'> </div>
                 <!-- Modal -->
                 <div id="myModal" class="modal fade" role="dialog" data-backdrop="static">
                     <div class="modal-dialog">
@@ -190,6 +243,7 @@
                             </div>
                             <div class="modal-body">
                                 <input type="text" id="questionAnswer">
+                                <div id='question-seconds-counter'> </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cevap Ver</button>

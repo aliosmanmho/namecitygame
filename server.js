@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
   socket.on(('QuestionRowFinish'), (gameId,rowIndex) => { 
     try
     {
-      QuestionRowFinish(gameId,rowIndex)
+      QuestionRowFinish(gameId,rowIndex,socket)
     }
     catch(e)
     {
@@ -118,12 +118,12 @@ io.on('connection', (socket) => {
 http.listen(process.env.PORT || 5000);
 
 
-function QuestionRowFinish(gameId,rowIndex){
+function QuestionRowFinish(gameId,rowIndex,socket){
   let game = GetGame(gameId);
   if(game!=null)
   {
     var playerAnswers = game.players.map(x=>x.answers);
-    if(LevelList.find(x=>x.level == game.level).questions.length > rowIndex)
+    if(LevelList.find(x=>x.level == game.level).questions.length -1 > rowIndex)
      {
       var levelQuestionsRow = LevelList.find(x=>x.level == game.level).questions[rowIndex];
       var isFinisAllUser = true;
@@ -140,6 +140,8 @@ function QuestionRowFinish(gameId,rowIndex){
       });
       if(isFinisAllUser)
       {
+        game.CalculatePlayersScore(rowIndex);
+        io.in(gameId).emit("PlayerScore", JSON.stringify(game.players.map(y=>{ return {playerId:y.id,score:y.score}} )));
         io.in(gameId).emit("GameStartStep", rowIndex+1);
       }
      }
@@ -160,7 +162,9 @@ function QuestionRowFinish(gameId,rowIndex){
       });
       if(isFinisAllUser)
       {
-          io.in(gameId).emit("GameFinish"," rowIndex+1");
+          game.CalculatePlayersScore(rowIndex);
+          io.in(gameId).emit("PlayerScore", JSON.stringify(game.players.map(y=>{ return {playerId:y.id,score:y.score}} )));
+          io.in(gameId).emit("GameFinish"," Oyun bitmiştir");
       }
      }
     
@@ -190,7 +194,8 @@ function AllSocetPushGameList() {
 
 function GenerateGame(createSocetID) {
   let _id = shortid.generate();
-  return new GameModel(_id, 1,createSocetID);
+  //Game Level Request Create Player
+  return new GameModel(_id, 1,createSocetID,LevelList.find(x=>x.level == 1));
 }
 function AnswerQuestion(socket, gameId, questionId, answer) {
   let player = GetPlayer(socket.id);
@@ -262,13 +267,13 @@ function CreateGame(socket) {
 
 
 }
-setInterval(function () {
-  if (GameList != null && GameList.length > 0) {
-    GameList.forEach(element => {
-      if (element.endTime >= Date.now()) { element.CalculatePlayerScore(LevelList.find(y => y.level == element.level).questions) }
-    });
-  }
-}, 1000);
+// setInterval(function () {
+//   if (GameList != null && GameList.length > 0) {
+//     GameList.forEach(element => {
+//       if (element.endTime >= Date.now()) { element.CalculatePlayerScore(LevelList.find(y => y.level == element.level).questions) }
+//     });
+//   }
+// }, 1000);
 
 function GetPlayer(id) {
   let player = PlayerList.find(function (player) {
