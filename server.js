@@ -2,9 +2,11 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 const path = __dirname + '/'; // this folder should contain your html files.
+const cors = require('cors');
 
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const options = { /* ... */ };
+const io = require('socket.io')(http,options);
 const { Socket } = require('dgram');
 const shortid = require('shortid');
 const LevelQuestionModel = require('./LevelQuestion.js');
@@ -22,9 +24,12 @@ router.get("/",function(req,res){
 router.get("/game.html",function(req,res){
   res.sendFile(path + "game.html");
 });
+app.use(cors());
 app.use(express.static(path+ "node_modules"));
 
 app.use("/",router);
+
+
 io.on('connection', (socket) => {
   console.log('a user connected : ' + socket.id);
   socket.on("error", function() {

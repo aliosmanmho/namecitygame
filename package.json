@@ -25,6 +25,7 @@
   "homepage": "https://github.com/aliosmanmho/namecitygame#readme",
   "dependencies": {
     "bootstrap": "^4.6.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "shortid": "^2.2.16",
     "socket.io": "^3.1.0"
