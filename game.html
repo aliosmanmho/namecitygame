@@ -175,6 +175,7 @@
                     clearInterval(questionTimer);
                 }
                 var questionAnswer = $("#questionAnswer").val();
+                $("#questionAnswer").val('');
                 var quesionID = $("#quesionID").val();
                 //Oyuncu Cevabını Yolluyor
                 socket.emit("AnswerQuestion", gameId, quesionID, questionAnswer);
