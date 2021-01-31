@@ -5,7 +5,6 @@ const path = __dirname + '/'; // this folder should contain your html files.
 const cors = require('cors');
 
 const http = require('http').Server(app);
-const options = { /* ... */ };
 const io = require('socket.io')(http,{ origins: '*:*'});
 const { Socket } = require('dgram');
 const shortid = require('shortid');
@@ -24,11 +23,7 @@ router.get("/",function(req,res){
 router.get("/game.html",function(req,res){
   res.sendFile(path + "game.html");
 });
-app.use(cors({
-  origin: ["https://namecitygameflutter.herokuapp.com/","http://namecitygameflutter.herokuapp.com/","https://namecitygameflutter.herokuapp.com/#/","http://namecitygameflutter.herokuapp.com/#/"],
-  credentials: true,
-}));
-//app.use(cors());
+app.use(cors());
 app.use(express.static(path+ "node_modules"));
 
 app.use("/",router);
