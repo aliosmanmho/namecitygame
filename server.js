@@ -24,7 +24,11 @@ router.get("/",function(req,res){
 router.get("/game.html",function(req,res){
   res.sendFile(path + "game.html");
 });
-app.use(cors());
+app.use(cors({
+  origin: ["https://namecitygameflutter.herokuapp.com/","http://namecitygameflutter.herokuapp.com/","https://namecitygameflutter.herokuapp.com/#/","http://namecitygameflutter.herokuapp.com/#/"],
+  credentials: true,
+}));
+//app.use(cors());
 app.use(express.static(path+ "node_modules"));
 
 app.use("/",router);
